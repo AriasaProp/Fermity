@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.31)
+project(fermity)
+
+# compile flags
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# external 
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR
+    CMAKE_SYSTEM_NAME STREQUAL "Android")
+    message(STATUS "Supported ${CMAKE_SYSTEM_NAME} system")
+else()
+    message(FATAL_ERROR "Unsupported ${CMAKE_SYSTEM_NAME} system")
+endif()
+
+
+# sets main project
+add_executable(${PROJECT_NAME} 
+    main/src/main.c
+)
+target_include_directories(${PROJECT_NAME} PRIVATE main/include)
+target_link_libraries(${PROJECT_NAME})
+
+# sets test project
