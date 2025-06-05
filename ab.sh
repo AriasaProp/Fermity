@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 cmake -S . -B build
-cmake --build build
+cmake --build build --clean-first
 ./build/fermity localhost 8080
