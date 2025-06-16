@@ -1,0 +1,7 @@
+<input type="checkbox" id="search-switch" class="hide" />
+<label id="nav-search-switch" for="search-switch"><i></i></label>
+<form action="/" method="GET">
+<input name="s" type="text" placeholder="Search" required />
+<button type="reset"><i>&#xf1f8;</i></button>
+<button type="submit"><i>&#xe800;</i></button>
+</form></nav></header><footer>

@@ -1,0 +1,335 @@
+<?xml version='1.0'?><!doctype html><html><head><title>Fermity
+%s</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="author" content="AriasaProp" />
+<meta name="description" content="Store some content." />
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;700&display=swap" />
+</head><body><style>
+@font-face {
+  font-family: "ic";
+  src: url(font/ic.ttf);
+  font-weight: normal;
+  font-style: normal;
+}
+/* color library - default */
+:root {
+  /* css only colors */
+  --opposite: #0003;
+  --accent: var(--accentColor, #eee);
+  --font: var(--fontColor, #000);
+  --nav: var(--navColor, #b3b3b3);
+  --body: var(--bodyColor, #efefef);
+}
+/* setting default */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /*outline: 1px solid lightgreen;*/
+}
+i {
+  display: inline-block;
+  font-family: "ic";
+  font-style: normal;
+  font-size: 1em;
+  speak: never;
+  aspect-ratio: 1 / 1;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  color: var(--font);
+}
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: "Poppins", sans-serif;
+  font-size: var(--F1, 19pt);
+  background-repeat: repeat;
+  background-color: var(--body);
+  background-image: url(image/background);
+}
+a {
+  color: inherit;
+  font-size: inherit;
+  text-decoration: none;
+}
+button {
+  color: inherit;
+  font-size: inherit;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+input {
+  font-size: inherit;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+label {
+  font-weight: 700;
+  font-size: 1em;
+}
+h1 {
+  font-weight: 700;
+  font-size: 1.16em;
+}
+h2 {
+  font-weight: 700;
+  font-size: 1.12em;
+}
+h3 {
+  font-weight: 700;
+  font-size: 1.07em;
+}
+h4 {
+  font-weight: 400;
+  font-size: 1.035em;
+}
+h5 {
+  font-weight: 400;
+  font-size: 1.024em;
+}
+h6 {
+  font-weight: 200;
+  font-size: 1em;
+}
+p {
+  font-size: 1em;
+}
+.hide {
+  display: none;
+}
+header {
+  display: block;
+  min-height: 100px;
+}
+header nav {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  user-select: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  flex-direction: row;
+  padding: 15px 8px 8px 8px;
+  background-color: var(--nav);
+  box-shadow: 0 3px 3px var(--nav);
+  flex-wrap: wrap;
+  z-index: 999;
+  text-shadow: 0 0 1em #0007;
+}
+header nav span#sp {
+  flex: 1 1;
+}
+header nav a {
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  padding: 2px 5px;
+  border-radius: 1.5px;
+}
+header nav a img {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+}
+header nav #nav-search-switch {
+  padding: 5px 15px;
+  border-radius: 3.5px;
+  display: inline-block;
+  cursor: pointer;
+}
+header nav #nav-search-switch:hover {
+  background-color: var(--opposite);
+}
+header nav #nav-search-switch i:after {
+  content: "\e800";
+  width: 1em;
+}
+header nav input:checked ~ #nav-search-switch i:after {
+  content: "\e803";
+}
+header nav form {
+  display: none;
+  text-align: center;
+  flex-wrap: nowrap;
+  margin: 10px;
+  background-color: var(--opposite);
+  overflow: hidden;
+  border-radius: 20px;
+}
+header nav form input {
+  padding-left: 15px;
+  color: black;
+  flex: 1 1 650px;
+}
+header nav form button {
+  padding: 4px 8px;
+}
+header nav form button:hover {
+  background-color: var(--accent);
+}
+header nav input:checked ~ form {
+  display: flex;
+}
+main {
+  align-items: center;
+  text-align: center;
+}
+footer {
+  font-size: 0.74em;
+  display: block;
+  color: white;
+  background-color: #0008;
+  padding: 15px 5px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+footer a {
+  display: inline-block;
+  padding: 3px;
+  border-radius: 8px;
+}
+footer a i {
+  display: inline-block;
+  width: 1.3em;
+  aspect-ratio: 1/1;
+}
+footer a p {
+  display: inline-block;
+  margin-left: 0.5em;
+}
+footer a:hover {
+  background-color: #0008;
+  font-size: 0.97em;
+}
+footer p {
+  text-align: center;
+  display: block;
+}
+/* when dark mode on */
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    /* css only colors */
+    --opposite: #fff3;
+    --accent: var(--accentColorDark, #ccc);
+    --font: var(--fontColorDark, #f2f2f2);
+    --nav: var(--navColorDark, #121212);
+    --body: var(--bodyColorDark, #262626);
+  }
+}
+/* while screen short */
+@media screen and (max-width: 800px) {
+  .hide-on-small {
+    display: none;
+  }
+  header nav {
+    font-size: 0.8em;
+    padding: 5px;
+  }
+  header nav form input {
+    padding-left: 15px;
+    width: 250px;
+  }
+}
+/* while screen wide */
+@media screen and (min-width: 800px) {
+  .hide-on-big {
+    display: none;
+  }
+}
+
+#block {
+  background-color: black;
+  color: white;
+  z-index: 1000;
+  display: block;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  font-style: bold;
+  font-size: 50pt;
+  text-align: center;
+}
+</style>
+<noscript><span id="block">Blocked</span></noscript>
+<script>
+if (!localStorage.getItem("theme-colors")) {
+  localStorage.setItem(
+    "theme-colors",
+    "#b3b3b3#efefef#eee#000#121212#262626#ccc#f2f2f2"
+  );
+}
+if (!localStorage.getItem("theme-fontSize")) {
+  localStorage.setItem("theme-fontSize", "19");
+}
+function updateColors() {
+  var clr = localStorage.getItem("theme-colors");
+  var clrs = clr.split("#");
+  clrs = clrs.filter(j => {
+    return j !== "";
+  });
+  if (clrs.length === 8) {
+    for (let j = 0; j < clrs.length; ++j) clrs[j] = "#" + clrs[j];
+
+    document.documentElement.style.setProperty("--navColor", clrs[0]);
+    document.documentElement.style.setProperty("--bodyColor", clrs[1]);
+    document.documentElement.style.setProperty("--accentColor", clrs[2]);
+    document.documentElement.style.setProperty("--fontColor", clrs[3]);
+
+    document.documentElement.style.setProperty("--navColorDark", clrs[4]);
+    document.documentElement.style.setProperty("--bodyColorDark",clrs[5]);
+    document.documentElement.style.setProperty("--accentColorDark",clrs[6]);
+    document.documentElement.style.setProperty("--fontColorDark",clrs[7]);
+  }
+}
+function updateFontSize() {
+  var fz = localStorage.getItem("theme-fontSize");
+  document.documentElement.style.setProperty("--F1", fz + "pt");
+}
+updateColors();
+updateFontSize();
+document.addEventListener("DOMContentLoaded", function () {});
+</script><header><nav role='navigation'><a
+%s><h2>Fermity</h2></a><span id='sp'></span>
+%s<input type="checkbox" id="search-switch" class="hide" />
+<label id="nav-search-switch" for="search-switch"><i></i></label>
+<form action="/" method="GET">
+<input name="s" type="text" placeholder="Search" required />
+<button type="reset"><i>&#xf1f8;</i></button>
+<button type="submit"><i>&#xe800;</i></button>
+</form></nav></header><footer>
+%s<a href="mailto:ikomangwidiadaariasa12@gmail.com"><i>&#xe802;</i><p>E-mail</p></a>
+<a href="https://github.com/AriasaProp"><i>&#xe80a;</i><p>Github</p></a>
+<a href="#"><i>&#xf16d;</i><p>Instagram</p></a>
+<a href="#"><i>&#xf308;</i><p>Facebook</p></a>
+<a href="#"><i>&#xf099;</i><p>Twitter</p></a>
+<hr/><p>Made for fun!</p>
+</footer></body></html>
+%s - About Me
+%s - Preferences
+%s - Updates
+%s - Account
+%s href='/'
+%s<a href='/account'><label class='hide-on-small'>Account</label></a>
+%s<a href='/preferences'><i>&#xf1de;</i><label class='hide-on-small'>Preferences</label></a>
+%s<a href='/aboutme'><i>&#xe806;</i><p>About Me</p></a>
+%s<a href='/updates'><i>&#xf1ea;</i><p>Update Lists</p></a>
+%s - Error

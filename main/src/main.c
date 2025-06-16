@@ -16,22 +16,29 @@
 
 #include "util.h"
 
-#define MAX_ERROR_MSG 512
+// max temporary message error
+#define MAX_ERROR_MSG 256
+// max text memorize
 #define MAX_BUFFER 4096
-#define NUM_WORK 8
-#define NUM_CLIENT 100
 
 static pthread_mutex_t pmtx = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t pcond = PTHREAD_COND_INITIALIZER;
+
+// max threads run on background to serv client
+#define NUM_WORK 8
 static volatile int alive = 1, work_active = 0;
+
+// max client fd that buffed to memory
+#define NUM_CLIENT 100
 static int clients[NUM_CLIENT] = {0};
+
 static SSL_CTX *sslctx;
 
 static void handling_signal(int);
 static void *serving_client(void *);
 
 int main(int argc, char *argv[]) {
-  unsigned long ssle;
+  int result_function = EXIT_SUCCESS;
   char error_msg[MAX_ERROR_MSG] = {0};
   int server_sock, t, t1, maxfd;
   struct sockaddr_in addr;
@@ -48,8 +55,7 @@ int main(int argc, char *argv[]) {
     // define address
     // host and port validate
     memset(&addr, 0, sizeof(addr));
-    struct addrinfo hints,
-    *result;
+    struct addrinfo hints, *result;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
@@ -92,6 +98,7 @@ int main(int argc, char *argv[]) {
     goto main_sock;
   }
   // make thread pool
+  if (prepare_utils()) goto main_sock;
   {
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -108,9 +115,6 @@ int main(int argc, char *argv[]) {
   printf("Server is started. Ctrl + C to stop serving ... \n");
 
 main_select:
-  pthread_mutex_lock(&pmtx);
-  if (!alive) goto kill_worker;
-  pthread_mutex_unlock(&pmtx);
   if (select(maxfd, &fd_master, NULL, NULL, NULL) <= 0) {
     printf("Unexpected! select got error, %s.\n", strerror(errno));
   } else {
@@ -121,12 +125,15 @@ main_select:
     pthread_mutex_unlock(&pmtx);
     pthread_cond_signal(&pcond);
   }
+  pthread_mutex_lock(&pmtx);
+  if (!alive) goto kill_worker;
+  pthread_mutex_unlock(&pmtx);
   goto main_select;
-
 kill_worker:
   while(work_active)
     pthread_cond_wait(&pcond, &pmtx);
   pthread_mutex_unlock(&pmtx);
+  free_utils();
 main_sock:
   close(server_sock);
 main_ssl_ctx:
@@ -135,14 +142,20 @@ main_ssl:
   EVP_cleanup();
 main_end:
   printf("Server stoped\n");
-  ssle = ERR_get_error();
-  if (*error_msg || ssle) {
-    if (*error_msg) fprintf("\n\033[31mError: %s\033[0m\n", error_msg);
-    if (errno) fprintf("\033[31mSystem Error: %s\033[0m\n", strerror(errno));
-    if (ssle) fprintf("\033[31mSSL Error: %s\033[0m\n", ERR_error_string(ssle, error_msg));
-    return EXIT_FAILURE;
+  if (*error_msg) {
+    result_function = EXIT_FAILURE;
+    printf("\033[31mError: %s\033[0m\n", error_msg);
   }
-  return EXIT_SUCCESS;
+  if (errno) {
+    result_function = EXIT_FAILURE;
+    printf("\033[31mSystem Error: %s\033[0m\n", strerror(errno));
+  }
+  for (unsigned long e = ERR_get_error (); e; e = ERR_get_error ()) {
+    result_function = EXIT_FAILURE;
+    ERR_error_string_n(e, error_msg, MAX_ERROR_MSG);
+    printf("\033[31mSSL Error: %s\033[0m\n", error_msg);
+  }
+  return result_function;
 }
 static void handling_signal(int s) {
   ((void)s);
@@ -156,7 +169,11 @@ static void *serving_client(void *arg) {
   ++work_active;
   pthread_mutex_unlock(&pmtx);
   (void)arg;
-  int client_sock, t;
+  size_t i, estimate_content_length;
+  int client_sock, t, page_file;
+  void *mpage;
+  httpRequest req;
+  const text *ts;
   char buffer[MAX_BUFFER], err_client[MAX_ERROR_MSG] = {0};
   SSL *ssl;
 get_job:
@@ -164,7 +181,7 @@ get_job:
   while(*clients <= 0 && alive) pthread_cond_wait(&pcond, &pmtx);
   if (!alive) goto serv_end;
   client_sock = *clients;
-  // it's last item become 0?
+  // FIXME: "clients" last item should become 0?
   memmove(clients, clients + 1, NUM_CLIENT - 1);
   pthread_mutex_unlock(&pmtx);
   if (!(ssl = SSL_new(sslctx))) {
@@ -181,26 +198,31 @@ get_job:
     strcpy(err_client, "ssl failed to read");
     goto client_close;
   }
-  httpRequest req = request_parser(buffer);
-  printf("URI: %s\n", req.uri);
-  static const char *send = "HTTP/1.1 200 OK\r\n"
-  "Content-Type: text/html\r\n"
-  "Content-Length: 89\r\n\r\n"
-  "<!DOCTYPE html><html lang='en'>"
-  "<head></head>"
-  "<body><h1>Full of page</h1></body>"
-  "</html>\r\n\r\n";
-  SSL_write(ssl, send, strlen(send));
+  printf("%s", buffer);
+  // estimate content length
+  estimate_content_length = 0;
+  ts = request_parser(&req, buffer);
+  for(i = 0; i < MAX_SPLIT; ++i)
+    SSL_write(ssl, ts[i].t, ts[i].l);
+  freed_responseText(ts);
 client_close:
   SSL_shutdown(ssl);
 client_stop:
   SSL_free(ssl);
 client_end:
   close(client_sock);
-  if (err_client[0]) {
-    printf("\n\033[31mClient Error %s\033[0m", err_client);
-    printf("\n\033[31mClient SSL Error %s\033[0m\n", ERR_error_string(ERR_get_error(), err_client));
-    err_client[0] = 0;
+  if (*err_client) {
+    printf("\033[31mClient Error %s\033[0m\n", err_client);
+    *err_client = 0;
+  }
+  if (errno) {
+    printf("\033[31mClient System Error %s\033[0m\n", strerror(errno));
+    errno = 0;
+  }
+  for (unsigned long e = ERR_get_error (); e; e = ERR_get_error ()) {
+    ERR_error_string_n(e, err_client, MAX_ERROR_MSG);
+    printf("\033[31mClient SSL Error %s\033[0m\n", err_client);
+    *err_client = 0;
   }
   goto get_job;
 serv_end:

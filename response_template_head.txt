@@ -1,0 +1,11 @@
+HTTP/1.0 %s
+Content-Type: %s
+Content-Length: %s
+
+%s200 OK%s404 Not Found%s301 Moved Permanently%simage/svg+xml%stext/html; charset=UTF-8
+X-UA-Compatible: ie=edge
+Content-Language: en%s
+Location: https://localhost:8080/%s
+
+%sfont/ttf%s
+Accept-Ranges: bytes%s400 Bad Request

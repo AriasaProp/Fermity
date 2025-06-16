@@ -1,0 +1,7 @@
+<a href="mailto:ikomangwidiadaariasa12@gmail.com"><i>&#xe802;</i><p>E-mail</p></a>
+<a href="https://github.com/AriasaProp"><i>&#xe80a;</i><p>Github</p></a>
+<a href="#"><i>&#xf16d;</i><p>Instagram</p></a>
+<a href="#"><i>&#xf308;</i><p>Facebook</p></a>
+<a href="#"><i>&#xf099;</i><p>Twitter</p></a>
+<hr/><p>Made for fun!</p>
+</footer></body></html>
